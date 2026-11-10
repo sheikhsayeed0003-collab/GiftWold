@@ -1,0 +1,30 @@
+{
+  "title": "তোমার জন্য একটা উপহার",
+  "recipientName": "",
+  "senderName": "",
+  "backgroundColor": "#1a0a2e",
+  "boxStyle": "classic",
+  "fontFamily": "dancing",
+  "effect": "confetti",
+  "musicUrl": "",
+  "coverImage": "",
+  "boxes": [
+    {
+      "id": "1",
+      "label": "১",
+      "message": "তুমি আমার কাছে সবচেয়ে মূল্যবান মানুষ।"
+    },
+    {
+      "id": "2",
+      "label": "২",
+      "message": "এই ছোট্ট উপহারটা তোমার হাসি ধরে রাখুক।"
+    },
+    {
+      "id": "3",
+      "label": "৩",
+      "message": "চিরকাল ভালো থেকো — ভালোবাসা সহ।"
+    }
+  ],
+  "id": "J-YVf5SCOH",
+  "createdAt": "2026-11-10T16:15:09.510Z"
+}

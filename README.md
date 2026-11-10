@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gift World
 
-## Getting Started
+৩D ডিজিটাল গিফট তৈরি, পাবলিশ ও শেয়ার — Next.js 16, Prisma (SQLite), React Three Fiber।
 
-First, run the development server:
+## শুরু
 
 ```bash
+npm install
+cp .env.example .env   # আগে না থাকলে
+npx prisma migrate dev
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- হোম: `/`
+- এডিটর: `/create`
+- Owner অ্যাডমিন: `/admin` (সিড থেকে owner অ্যাকাউন্ট)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Owner লগইন (ডিফল্ট সিড)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- ইমেইল: `OWNER_EMAIL` (.env)
+- পাসওয়ার্ড: `OWNER_PASSWORD` (.env)
 
-## Learn More
+## বর্তমান অবস্থা (ফেজ)
 
-To learn more about Next.js, take a look at the following resources:
+| ধাপ | স্ট্যাটাস |
+|-----|---------|
+| ১. হোমপেজ + অ্যাকাউন্ট + DB | ✅ |
+| ২. ফ্রি/প্রিমিয়াম + WhatsApp অর্ডার | ✅ (ম্যানুয়াল প্রিমিয়াম গ্রান্ট) |
+| ৩. 3D এডিটর (R3F হিরো + প্রিভিউ) | ✅ বেসিক |
+| ৪. ভিডিও/গান আপলোড লাইব্রেরি | 🔜 |
+| ৫. পাবলিশ + QR + শেয়ার | ✅ |
+| ৬. WhatsApp অর্ডার | ✅ |
+| ৭. Owner ড্যাশবোর্ড | ✅ বেসিক |
+| ৮. মোবাইল পলিশ + টেস্ট | চলমান |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+পুরনো JSON গিফট (`data/gifts/`) এখনও `/g/[id]` এ ফলব্যাক হিসেবে কাজ করে।
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## স্ক্রিপ্ট
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run db:migrate` — মাইগ্রেশন
+- `npm run db:seed` — প্যাকেজ + owner
+- `npm run db:studio` — Prisma Studio

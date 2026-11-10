@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  OWNER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?   @unique
+  phone         String?   @unique
+  passwordHash  String
+  role          UserRole  @default(USER)
+  planId        String?
+  plan          PackagePlan? @relation(fields: [planId], references: [id])
+  planExpiresAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  gifts         Gift[]
+  registrations DeviceRegistrationLog[]
+}
+
+model PackagePlan {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  nameBn        String?
+  priceUsd      Float    @default(0)
+  durationDays  Int      @default(0)
+  features      String   @default("[]")
+  featureListBn String   @default("[]")
+  isPremium     Boolean  @default(true)
+  isFree        Boolean  @default(false)
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  users         User[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Gift {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  config      String
+  published   Boolean  @default(false)
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                      Int      @id @default(1)
+  siteName                String   @default("Gift World")
+  whatsappNumber          String   @default("8801302003306")
+  freeGiftsLimit          Int      @default(1)
+  freePublishLimit        Int      @default(1)
+  freeTemplateSlugs       String   @default("[\"classic\",\"ribbon\"]")
+  freeEffectSlugs         String   @default("[\"none\",\"confetti\"]")
+  maxRegistrationsPerDevice Int    @default(3)
+  registrationWindowHours Int      @default(168)
+  homepageTaglineBn       String   @default("নিজের মতো করে 3D গিফট বক্স বানান")
+  homepageHeroBn          String   @default("ছবি, গান, ভিডিও ও সারপ্রাইজ — এক লিংকে শেয়ার করুন")
+  contactEmail            String   @default("hello@giftworld.local")
+  updatedAt               DateTime @updatedAt
+}
+
+model DeviceRegistrationLog {
+  id          String   @id @default(cuid())
+  deviceHash  String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([deviceHash, createdAt])
+}
+
+model AdminPermission {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  canManageUsers      Boolean @default(false)
+  canManagePackages   Boolean @default(false)
+  canManageGifts      Boolean @default(true)
+  canManageTemplates  Boolean @default(true)
+  canManageSettings   Boolean @default(false)
+  canManageHomepage   Boolean @default(false)
+  createdAt DateTime @default(now())
+}
