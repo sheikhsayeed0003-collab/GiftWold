@@ -48,15 +48,18 @@ model PackagePlan {
 }
 
 model Gift {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  config      String
-  published   Boolean  @default(false)
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  config          String
+  published       Boolean  @default(false)
+  /** পাবলিক গ্যালারিতে দেখানো; প্রাইভেট গিফট লিংকে শুধু পাঠক/প্রাপক */
+  isPublic        Boolean  @default(false)
+  /** প্রাপকের লগইন ইমেইল — মিললে খোলার অনুমতি */
+  recipientEmail  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model SiteSettings {
@@ -76,6 +79,12 @@ model SiteSettings {
   heroGiftBoxMessage      String   @default("Welcome! You unlocked a secret surprise from Gift World ✨")
   /** ০ = অসীম; ১–১০ = ভিজিটর প্রতি ডিভাইসে সর্বোচ্চ খোলার সংখ্যা */
   heroGiftBoxMaxOpens     Int      @default(3)
+  /** মেগাবাইটে ফ্রি ইউজার আপলোড সীমা */
+  freeUploadMaxMb         Int      @default(10)
+  premiumUploadMaxMb      Int      @default(50)
+  /** ফ্রি প্যাকেজে ভিডিও আপলোড */
+  allowFreeVideoUpload    Boolean  @default(true)
+  uploadsEnabled          Boolean  @default(true)
   updatedAt               DateTime @updatedAt
 }
 

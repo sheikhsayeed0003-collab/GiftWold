@@ -100,9 +100,12 @@ export async function HomePage() {
       </section>
 
       <section id="gallery" className="mx-auto max-w-7xl px-4 pb-20 md:px-8">
-        <h2 className="font-bengali text-3xl font-bold text-white">সাম্প্রতিক গিফট</h2>
+        <h2 className="font-bengali text-3xl font-bold text-white">সাম্প্রতিক পাবলিক গিফট</h2>
+        <p className="mt-1 text-sm text-white/45">
+          প্রাইভেট গিফট এখানে দেখা যায় না — শুধু পাঠক ও প্রাপক নিজেদের লিংকে দেখতে পারবে
+        </p>
         {gallery.length === 0 ? (
-          <p className="mt-4 text-white/45">এখনো পাবলিশ করা গিফট নেই — প্রথম হোন!</p>
+          <p className="mt-4 text-white/45">এখনো পাবলিক গিফট নেই — প্রথম হোন!</p>
         ) : (
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {gallery.map((g) => {

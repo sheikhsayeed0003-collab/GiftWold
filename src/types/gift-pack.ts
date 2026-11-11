@@ -216,6 +216,8 @@ export interface GiftPackProject {
   id?: string;
   title: string;
   recipientName: string;
+  /** প্রাপকের অ্যাকাউন্ট ইমেইল (প্রাইভেট গিফট খোলার জন্য) */
+  recipientEmail?: string;
   senderName: string;
   backgroundColor: string;
   backgroundKind?: BackgroundKind;

@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-import { nanoid } from "nanoid";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { userHasActivePremium } from "@/lib/plans/limits";
-
-const MAX_FREE = 2 * 1024 * 1024;
-const MAX_PREMIUM = 25 * 1024 * 1024;
+import { prisma } from "@/lib/db";
+import { mediaKind, persistUserUpload } from "@/lib/storage/media-upload";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) {
-    return NextResponse.json({ error: "লগইন প্রয়োজন" }, { status: 401 });
+    return NextResponse.json({ error: "আপলোডের জন্য লগইন করুন" }, { status: 401 });
+  }
+
+  const settings = await prisma.siteSettings.findFirst({ where: { id: 1 } });
+  if (settings && !settings.uploadsEnabled) {
+    return NextResponse.json({ error: "অ্যাডমিন আপলোড বন্ধ রেখেছে" }, { status: 403 });
   }
 
   const form = await request.formData();
@@ -20,22 +21,46 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "ফাইল নেই" }, { status: 400 });
   }
 
-  const premium = userHasActivePremium(user) || user.role === "OWNER";
-  const max = premium ? MAX_PREMIUM : MAX_FREE;
-  if (file.size > max) {
+  const kind = mediaKind(file.type, file.name);
+  if (kind === "other") {
     return NextResponse.json(
-      { error: premium ? "ফাইল খুব বড়" : "ফ্রি প্যাকেজে সর্বোচ্চ ২MB — প্রিমিয়াম নিন" },
+      { error: "শুধু ছবি, ভিডিও বা অডিও ফাইল গ্রহণযোগ্য" },
+      { status: 400 }
+    );
+  }
+
+  const premium = userHasActivePremium(user) || user.role === "OWNER";
+  const freeMb = settings?.freeUploadMaxMb ?? 10;
+  const premiumMb = settings?.premiumUploadMaxMb ?? 50;
+  const maxBytes = (premium ? premiumMb : freeMb) * 1024 * 1024;
+
+  if (file.size > maxBytes) {
+    return NextResponse.json(
+      {
+        error: premium
+          ? `ফাইল সর্বোচ্চ ${premiumMb}MB`
+          : `ফ্রিতে সর্বোচ্চ ${freeMb}MB — প্রিমিয়াম নিন`,
+      },
       { status: 403 }
     );
   }
 
-  const ext = path.extname(file.name).slice(0, 12) || ".bin";
-  const safeName = `${nanoid(10)}${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads", user.id);
-  await mkdir(dir, { recursive: true });
-  const buf = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, safeName), buf);
+  if (kind === "video" && !premium && settings && !settings.allowFreeVideoUpload) {
+    return NextResponse.json(
+      { error: "ভিডিও আপলোড এখন শুধু প্রিমিয়াম — অ্যাডমিন সেটিংস দেখুন" },
+      { status: 403 }
+    );
+  }
 
-  const url = `/uploads/${user.id}/${safeName}`;
-  return NextResponse.json({ url });
+  try {
+    const { url, storage } = await persistUserUpload(user.id, file);
+    return NextResponse.json({ url, storage });
+  } catch (e) {
+    console.error("upload failed", e);
+    const msg =
+      process.env.BLOB_READ_WRITE_TOKEN
+        ? "স্টোরেজে সেভ ব্যর্থ"
+        : "লোকাল আপলোড ব্যর্থ। Vercel-এ Blob চালু করুন বা ডিস্কে লিখার অনুমতি দিন";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

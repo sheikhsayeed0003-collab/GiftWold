@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getGiftBySlug } from "@/lib/gifts/repository";
+import { getGiftBySlug, getGiftRecordBySlug } from "@/lib/gifts/repository";
 import { PageShell } from "@/components/ui/PageShell";
 import { GiftReceiver } from "@/components/pack-player/GiftReceiver";
+import { getCurrentUser } from "@/lib/auth/current-user";
+import { resolveGiftAccess } from "@/lib/gifts/access";
+import { GiftAccessDenied } from "@/components/gift/GiftAccessGate";
 
 export const instant = false;
 
@@ -24,9 +27,39 @@ export async function generateMetadata({
 
 async function GiftView({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const gift = await getGiftBySlug(id);
+  const [row, gift, viewer] = await Promise.all([
+    getGiftRecordBySlug(id),
+    getGiftBySlug(id),
+    getCurrentUser(),
+  ]);
   if (!gift) notFound();
-  return <GiftReceiver data={gift} />;
+
+  if (row) {
+    const access = resolveGiftAccess(
+      {
+        userId: row.userId,
+        published: row.published,
+        isPublic: row.isPublic,
+        recipientEmail: row.recipientEmail,
+      },
+      viewer
+        ? { id: viewer.id, email: viewer.email, role: viewer.role }
+        : null
+    );
+    if (!access.canView) {
+      return (
+        <GiftAccessDenied message={access.messageBn ?? "এই গিফট দেখার অনুমতি নেই"} slug={id} />
+      );
+    }
+    return (
+      <GiftReceiver
+        data={gift}
+        access={{ canOpen: access.canOpen, role: access.role, messageBn: access.messageBn }}
+      />
+    );
+  }
+
+  return <GiftReceiver data={gift} access={{ canOpen: true, role: "public" }} />;
 }
 
 export default function GiftPage({

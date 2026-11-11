@@ -25,6 +25,10 @@ export async function updateSiteSettings(formData: FormData) {
       contactEmail: String(formData.get("contactEmail") ?? ""),
       heroGiftBoxMessage: String(formData.get("heroGiftBoxMessage") ?? ""),
       heroGiftBoxMaxOpens: Math.max(0, Number(formData.get("heroGiftBoxMaxOpens") ?? 3)),
+      freeUploadMaxMb: Math.max(1, Number(formData.get("freeUploadMaxMb") ?? 10)),
+      premiumUploadMaxMb: Math.max(1, Number(formData.get("premiumUploadMaxMb") ?? 50)),
+      allowFreeVideoUpload: formData.get("allowFreeVideoUpload") === "on",
+      uploadsEnabled: formData.get("uploadsEnabled") === "on",
     },
   });
   revalidatePath("/");

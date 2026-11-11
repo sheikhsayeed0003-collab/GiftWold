@@ -42,6 +42,17 @@ export function RightPanel() {
           value={project.recipientName}
           onChange={(e) => patchProject({ recipientName: e.target.value })}
         />
+        <label className="mt-2 block text-[10px] text-white/45">প্রাপকের ইমেইল (প্রাইভেট খোলা)</label>
+        <input
+          type="email"
+          className={input}
+          value={project.recipientEmail ?? ""}
+          onChange={(e) => patchProject({ recipientEmail: e.target.value })}
+          placeholder="প্রাপক যে ইমেইলে লগইন করবে"
+        />
+        <p className="mt-1 text-[10px] text-violet-300/70">
+          ইমেইল দিলে শুধু প্রাপক খুলতে পারবে; পাঠক দেখবে; অন্যরা দেখবে না
+        </p>
       </section>
 
       <WishEditorPanel />

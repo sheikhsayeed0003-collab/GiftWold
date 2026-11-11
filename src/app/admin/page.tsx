@@ -85,6 +85,39 @@ export default async function AdminPage() {
               className={input + " mt-1 min-h-[80px]"}
             />
           </label>
+          <h3 className="col-span-full pt-2 text-sm font-semibold text-emerald-200/90">মিডিয়া আপলোড (অ্যাডমিন)</h3>
+          <label className="flex items-center gap-2 text-sm text-white/70">
+            <input type="checkbox" name="uploadsEnabled" defaultChecked={settings?.uploadsEnabled ?? true} />
+            আপলোড সক্রিয়
+          </label>
+          <label className="text-sm text-white/60">
+            ফ্রি সর্বোচ্চ (MB)
+            <input
+              name="freeUploadMaxMb"
+              type="number"
+              min={1}
+              defaultValue={settings?.freeUploadMaxMb ?? 10}
+              className={input + " mt-1"}
+            />
+          </label>
+          <label className="text-sm text-white/60">
+            প্রিমিয়াম সর্বোচ্চ (MB)
+            <input
+              name="premiumUploadMaxMb"
+              type="number"
+              min={1}
+              defaultValue={settings?.premiumUploadMaxMb ?? 50}
+              className={input + " mt-1"}
+            />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-white/70">
+            <input
+              type="checkbox"
+              name="allowFreeVideoUpload"
+              defaultChecked={settings?.allowFreeVideoUpload ?? true}
+            />
+            ফ্রি ইউজার ভিডিও আপলোড
+          </label>
           <h3 className="col-span-full pt-2 text-sm font-semibold text-rose-200/90">৩ডি ডেমো গিফট বক্স (হোমপেজ)</h3>
           <label className="col-span-full text-sm text-white/60">
             ভেতরের বার্তা (খোলার পর পপ-আপ)

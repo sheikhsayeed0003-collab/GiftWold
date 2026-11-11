@@ -17,6 +17,7 @@ type Phase = "password" | "closed" | "opening" | "opened";
 type Props = {
   project: GiftPackProject;
   preview?: boolean;
+  canOpen?: boolean;
   onOpenPack?: () => void;
   showPackCta?: boolean;
 };
@@ -28,7 +29,13 @@ function formatSignOff(text: string, recipient: string, sender: string) {
   return s;
 }
 
-export function WishGiftExperience({ project, preview, onOpenPack, showPackCta }: Props) {
+export function WishGiftExperience({
+  project,
+  preview,
+  canOpen = true,
+  onOpenPack,
+  showPackCta,
+}: Props) {
   const wish = useMemo(() => resolveWishConfig(project), [project]);
   const name = project.recipientName;
   const sender = project.senderName ?? "";
@@ -104,7 +111,7 @@ export function WishGiftExperience({ project, preview, onOpenPack, showPackCta }
   };
 
   const openGift = () => {
-    if (phase !== "closed") return;
+    if (!canOpen || phase !== "closed") return;
     setPhase("opening");
     window.setTimeout(() => setPhase("opened"), 900);
   };
@@ -174,8 +181,8 @@ export function WishGiftExperience({ project, preview, onOpenPack, showPackCta }
             <p className="mb-6 text-center font-playfair text-2xl text-gradient md:text-3xl">{headline}</p>
             <motion.div
               role="button"
-              tabIndex={0}
-              onClick={openGift}
+              tabIndex={canOpen ? 0 : -1}
+              onClick={canOpen ? openGift : undefined}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();

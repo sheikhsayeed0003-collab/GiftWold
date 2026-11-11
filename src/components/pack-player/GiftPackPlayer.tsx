@@ -21,9 +21,12 @@ import { GiftRevealOverlay } from "@/components/gift-box/GiftRevealOverlay";
 export function GiftPackPlayer({
   project,
   preview = false,
+  canOpen = true,
 }: {
   project: GiftPackProject;
   preview?: boolean;
+  /** প্রাপক ছাড়া (পাঠক প্রিভিউ) হলে false */
+  canOpen?: boolean;
 }) {
   const sequence = useMemo(() => getSequenceRoots(project.roots), [project.roots]);
   const [step, setStep] = useState(0);
@@ -103,7 +106,7 @@ export function GiftPackPlayer({
   }, []);
 
   const openBox = useCallback(() => {
-    if (!current || opened || completed || openLocked) return;
+    if (!canOpen || !current || opened || completed || openLocked) return;
     if (!preview && maxOpens > 0 && !canOpenGiftBox(openScope, maxOpens)) {
       setOpenLocked(true);
       return;
@@ -136,7 +139,7 @@ export function GiftPackPlayer({
       setContentTimeMs(0);
       setSlideTimeMs(0);
     }, delay);
-  }, [burst, completed, current, maxOpens, openLocked, openScope, opened, preview]);
+  }, [burst, canOpen, completed, current, maxOpens, openLocked, openScope, opened, preview]);
 
   useEffect(() => {
     if (!showLayers) return;
@@ -317,7 +320,7 @@ export function GiftPackPlayer({
           node={current}
           opened={opened}
           compactTv={isMobile}
-          onOpenRequest={!opened && !openLocked ? openBox : undefined}
+          onOpenRequest={canOpen && !opened && !openLocked ? openBox : undefined}
           tv={{
             project,
             contentTimeMs: tvContentMs,
@@ -362,7 +365,7 @@ export function GiftPackPlayer({
           Previous
         </button>
 
-        {!opened && !openLocked ? (
+        {canOpen && !opened && !openLocked ? (
           <button
             type="button"
             onClick={openBox}

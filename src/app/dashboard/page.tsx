@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { userHasActivePremium } from "@/lib/plans/limits";
+import { listReceivedGifts } from "@/lib/gifts/repository";
 
 export const instant = false;
 
@@ -10,10 +11,13 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/dashboard");
 
-  const gifts = await prisma.gift.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [gifts, received] = await Promise.all([
+    prisma.gift.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    user.email ? listReceivedGifts(user.email) : Promise.resolve([]),
+  ]);
 
   const premium = userHasActivePremium(user) || user.role === "OWNER";
 
@@ -42,8 +46,33 @@ export default async function DashboardPage() {
         )}
       </span>
 
+      {received.length > 0 ? (
+        <>
+          <h2 className="mt-10 text-lg font-semibold text-white">আমার জন্য গিফট (প্রাপক)</h2>
+          <p className="text-sm text-white/45">এখান থেকে আপনি খুলতে পারবেন</p>
+          <ul className="mt-4 space-y-3">
+            {received.map((g) => {
+              let title = "Gift";
+              try {
+                title = (JSON.parse(g.config) as { title?: string }).title ?? title;
+              } catch {
+                /* ignore */
+              }
+              return (
+                <li key={g.slug} className="glass-panel flex items-center justify-between rounded-xl px-4 py-3">
+                  <span className="text-white">{title}</span>
+                  <Link href={`/g/${g.slug}`} className="text-sm text-rose-300">
+                    খুলুন
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      ) : null}
+
       <div className="mt-10 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">আমার গিফট</h2>
+        <h2 className="text-lg font-semibold text-white">আমি পাঠিয়েছি</h2>
         <Link href="/create" className="text-sm text-rose-300">
           + নতুন গিফট
         </Link>
@@ -63,7 +92,7 @@ export default async function DashboardPage() {
               <li key={g.id} className="glass-panel flex items-center justify-between rounded-xl px-4 py-3">
                 <span className="text-white">{title}</span>
                 <Link href={`/g/${g.slug}`} className="text-sm text-violet-300">
-                  দেখুন
+                  প্রিভিউ
                 </Link>
               </li>
             );
