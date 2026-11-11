@@ -20,6 +20,9 @@
 # production
 /build
 
+# local video analysis frames
+.analysis-frames/
+
 # misc
 .DS_Store
 *.pem

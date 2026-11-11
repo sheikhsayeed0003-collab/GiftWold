@@ -5,6 +5,7 @@ import type {
   GiftPackNode,
   GiftPackProject,
   TextLayerData,
+  WishExperienceConfig,
 } from "@/types/gift-pack";
 import { BOX_LIBRARY } from "./box-library";
 import { defaultTvScreen } from "./tv-screen";
@@ -60,6 +61,24 @@ export function createPackNode(templateId: GiftPackNode["templateId"], index: nu
   };
 }
 
+export function defaultWishExperience(): WishExperienceConfig {
+  return {
+    enabled: false,
+    template: "night",
+    tapHint: "খুলতে এখানে ট্যাপ করুন",
+    headline: "তোমার জন্য একটি সারপ্রাইজ",
+    greeting: "প্রিয় {name},",
+    message:
+      "তোমার হাসি আমার দিনটাকে আলোকিত করে। এই ছোট্ট সারপ্রাইজটা তোমার জন্যই—ভালোবাসা, স্মৃতি আর অনেক শুভকামনা নিয়ে।",
+    signOff: "চিরকাল তোমার,{br}— {sender}",
+    counterLabel: "একসাথে কাটিয়েছি",
+    counterStart: undefined,
+    musicSrc: "",
+    linkPassword: "",
+    showSoundToggle: true,
+  };
+}
+
 export function defaultPackProject(): GiftPackProject {
   return {
     schemaVersion: 2,
@@ -73,6 +92,8 @@ export function defaultPackProject(): GiftPackProject {
     roots: [createPackNode("classic", 0)],
     sequenceReady: true,
     timelineDurationMs: 12000,
+    experienceMode: "pack3d",
+    wishExperience: defaultWishExperience(),
   };
 }
 

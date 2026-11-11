@@ -129,6 +129,27 @@ export interface AudioLayerData {
 
 export type TvScreenStyle = "modern" | "crt" | "slim";
 
+export type WishVisualTemplate = "night" | "tree" | "matrix" | "poem";
+
+export type GiftExperienceMode = "pack3d" | "wish" | "both";
+
+/** ভিডিও রেফারেন্সের মতো Wish / Tap-to-open অভিজ্ঞতা */
+export interface WishExperienceConfig {
+  enabled: boolean;
+  template: WishVisualTemplate;
+  tapHint: string;
+  headline: string;
+  greeting: string;
+  message: string;
+  signOff: string;
+  counterLabel: string;
+  /** ISO তারিখ — “Together for” কাউন্টার */
+  counterStart?: string;
+  musicSrc?: string;
+  linkPassword?: string;
+  showSoundToggle: boolean;
+}
+
 export interface GiftTvScreenConfig {
   enabled: boolean;
   width: number;
@@ -204,6 +225,9 @@ export interface GiftPackProject {
   sequenceReady?: boolean;
   globalAudio?: AudioLayerData;
   timelineDurationMs: number;
+  /** pack3d = ৩ডি+টিভি; wish = ভিডিও-স্টাইল ট্যাপ টু ওপেন; both = প্রথম wish তারপর প্যাক */
+  experienceMode?: GiftExperienceMode;
+  wishExperience?: WishExperienceConfig;
   createdAt?: string;
 }
 

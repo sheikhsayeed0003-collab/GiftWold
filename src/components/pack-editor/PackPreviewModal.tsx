@@ -1,12 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import type { GiftPackProject } from "@/types/gift-pack";
-
-const GiftPackPlayer = dynamic(
-  () => import("@/components/pack-player/GiftPackPlayer").then((m) => m.GiftPackPlayer),
-  { ssr: false }
-);
+import { GiftReceiver } from "@/components/pack-player/GiftReceiver";
 
 export function PackPreviewModal({
   open,
@@ -29,7 +24,7 @@ export function PackPreviewModal({
           বন্ধ
         </button>
         <div className="flex-1 overflow-auto">
-          <GiftPackPlayer project={project} preview />
+          <GiftReceiver data={project} preview />
         </div>
       </div>
     </div>

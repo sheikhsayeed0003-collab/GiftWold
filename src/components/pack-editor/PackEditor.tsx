@@ -13,12 +13,15 @@ import { SequenceNumberBar } from "./SequenceNumberBar";
 import { ShareModal } from "@/components/editor/ShareModal";
 import { MobileEditorNav, type MobileEditorTab } from "./MobileEditorNav";
 import { useIsMobile } from "@/hooks/useMediaQuery";
+import { WishGiftExperience } from "@/components/wish/WishGiftExperience";
+import { shouldShowWishExperience } from "@/lib/gift-pack/wish";
 
 function EditorBody() {
   const { project, selectedNode, playheadMs } = usePackEditor();
   const [publishing, setPublishing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [centerView, setCenterView] = useState<"3d" | "content">("3d");
+  const [centerView, setCenterView] = useState<"3d" | "content" | "wish">("3d");
+  const wishPreview = shouldShowWishExperience(project);
   const [mobileTab, setMobileTab] = useState<MobileEditorTab>("studio");
   const isMobile = useIsMobile();
 
@@ -72,10 +75,26 @@ function EditorBody() {
         >
           কনটেন্ট
         </button>
+        {wishPreview ? (
+          <button
+            type="button"
+            onClick={() => setCenterView("wish")}
+            className={clsx(
+              "touch-manipulation min-h-11 rounded-xl px-4 py-2 text-xs font-medium transition active:scale-[0.98]",
+              centerView === "wish"
+                ? "bg-violet-600 text-white shadow-lg shadow-violet-900/30"
+                : "bg-white/10 text-white/70"
+            )}
+          >
+            Wish প্রিভিউ
+          </button>
+        ) : null}
       </div>
       <SequenceNumberBar />
       <div className="min-h-[min(48dvh,400px)] flex-1 overflow-hidden rounded-xl border border-white/10 md:min-h-0">
-        {centerView === "3d" ? (
+        {centerView === "wish" ? (
+          <WishGiftExperience project={project} preview />
+        ) : centerView === "3d" ? (
           <Viewport3D
             node={selectedNode}
             compactTv={isMobile}

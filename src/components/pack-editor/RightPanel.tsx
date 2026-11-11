@@ -3,6 +3,7 @@
 import { usePackEditor } from "@/context/PackEditorContext";
 import { LayerInspector } from "./LayerInspector";
 import { TvScreenSettings } from "./TvScreenSettings";
+import { WishEditorPanel } from "./WishEditorPanel";
 
 const input =
   "w-full rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-white";
@@ -42,6 +43,8 @@ export function RightPanel() {
           onChange={(e) => patchProject({ recipientName: e.target.value })}
         />
       </section>
+
+      <WishEditorPanel />
 
       <section>
         <h3 className="text-xs font-semibold uppercase text-white/50">বক্স সেটিংস</h3>
