@@ -26,6 +26,12 @@ export async function persistUserUpload(
   const safeName = `${nanoid(12)}${ext}`;
   const key = `gift-world/${userId}/${safeName}`;
 
+  const onVercel = process.env.VERCEL === "1";
+
+  if (onVercel && !process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("BLOB_READ_WRITE_TOKEN missing on Vercel — Blob store লিংক করুন");
+  }
+
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     const blob = await put(key, file, {
       access: "public",
