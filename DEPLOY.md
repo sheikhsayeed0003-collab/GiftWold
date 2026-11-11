@@ -7,8 +7,19 @@
 
 ## ১. Postgres (Neon — বিনামূল্যে)
 
-1. [Vercel Dashboard](https://vercel.com) → **Storage** → **Neon** (অথবা [neon.tech](https://neon.tech))
-2. `DATABASE_URL` কপি করুন (`postgresql://...?sslmode=require`)
+**দ্রুত (Vercel Marketplace — রেকমেন্ডেড):**
+
+1. ব্রাউজারে খুলুন: [Neon টার্মস একসেপ্ট (chebengwaemma)](https://vercel.com/chebengwaemma/~/integrations/accept-terms/neon?source=cli)
+2. টার্মস একসেপ্ট করার পর লোকালে চালান:
+
+```bash
+npx vercel integration add neon --non-interactive --no-claim
+npx vercel env pull --environment production
+```
+
+`DATABASE_URL` স্বয়ংক্রিয়ভাবে **gefty** প্রজেক্টে যুক্ত হবে।
+
+**অথবা ম্যানুয়াল:** [Vercel Dashboard](https://vercel.com) → **Storage** → **Neon** → `DATABASE_URL` কপি (`postgresql://...?sslmode=require`)
 
 ## ২. Vercel Environment Variables
 
