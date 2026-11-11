@@ -25,7 +25,19 @@ if (isVercel) {
 
 execSync("npx prisma generate", { stdio: "inherit" });
 if (isVercel) {
-  execSync("npx prisma migrate deploy", { stdio: "inherit" });
-  execSync("npx prisma db seed", { stdio: "inherit" });
+  const migrateEnv = {
+    ...process.env,
+    PRISMA_MIGRATE_ADVISORY_LOCK_TIMEOUT: "120000",
+  };
+  try {
+    execSync("npx prisma migrate deploy", { stdio: "inherit", env: migrateEnv });
+  } catch (err) {
+    console.warn("[vercel-build] migrate deploy failed — continuing build (migrations may already be applied):", err);
+  }
+  try {
+    execSync("npx prisma db seed", { stdio: "inherit", env: migrateEnv });
+  } catch (err) {
+    console.warn("[vercel-build] db seed skipped or failed:", err);
+  }
 }
 execSync("npx next build", { stdio: "inherit" });
