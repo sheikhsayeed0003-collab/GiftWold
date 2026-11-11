@@ -26,5 +26,6 @@ if (isVercel) {
 execSync("npx prisma generate", { stdio: "inherit" });
 if (isVercel) {
   execSync("npx prisma migrate deploy", { stdio: "inherit" });
+  execSync("npx prisma db seed", { stdio: "inherit" });
 }
 execSync("npx next build", { stdio: "inherit" });
