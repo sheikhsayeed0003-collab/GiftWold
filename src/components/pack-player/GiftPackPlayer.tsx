@@ -9,9 +9,18 @@ import { formatSequenceLabel, getSequenceRoots } from "@/lib/gift-pack/sequence"
 import { Viewport3D } from "@/components/pack-editor/Viewport3D";
 import { getTvContentSlides, normalizeTvScreen } from "@/lib/gift-pack/tv-screen";
 import { useIsMobile } from "@/hooks/useMediaQuery";
+import {
+  canOpenGiftBox,
+  getOpenCount,
+  recordGiftBoxOpen,
+  remainingOpens,
+} from "@/lib/gift-box/open-limit";
+import { resolveMaxOpenLimit, resolveRevealMessage } from "@/lib/gift-pack/reveal-message";
+import { GiftRevealOverlay } from "@/components/gift-box/GiftRevealOverlay";
 
 export function GiftPackPlayer({
   project,
+  preview = false,
 }: {
   project: GiftPackProject;
   preview?: boolean;
@@ -26,6 +35,9 @@ export function GiftPackPlayer({
   const [tvEmerged, setTvEmerged] = useState(0);
   const [tvPaused, setTvPaused] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [openLocked, setOpenLocked] = useState(false);
+  const [showReveal, setShowReveal] = useState(false);
+  const [revealText, setRevealText] = useState("");
   const audioRef = useRef<HTMLAudioElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +46,19 @@ export function GiftPackPlayer({
   const current = sequence[step] ?? null;
   const total = sequence.length;
   const isLast = step >= total - 1;
+  const maxOpens = current ? resolveMaxOpenLimit(current) : 0;
+  const openScope = current
+    ? `${project.id ?? "preview"}_${current.id}`
+    : "preview";
+
+  useEffect(() => {
+    if (preview || !current) {
+      setOpenLocked(false);
+      return;
+    }
+    const limited = maxOpens > 0 && !canOpenGiftBox(openScope, maxOpens);
+    setOpenLocked(limited);
+  }, [current, maxOpens, openScope, preview, step]);
   const tv = useMemo(() => normalizeTvScreen(current?.tvScreen), [current?.tvScreen]);
 
   const slides = useMemo(
@@ -78,7 +103,14 @@ export function GiftPackPlayer({
   }, []);
 
   const openBox = useCallback(() => {
-    if (!current || opened || completed) return;
+    if (!current || opened || completed || openLocked) return;
+    if (!preview && maxOpens > 0 && !canOpenGiftBox(openScope, maxOpens)) {
+      setOpenLocked(true);
+      return;
+    }
+    if (!preview && maxOpens > 0) recordGiftBoxOpen(openScope);
+    setRevealText(resolveRevealMessage(current));
+    setShowReveal(true);
     setOpened(true);
     burst(current.openEffect);
 
@@ -104,7 +136,7 @@ export function GiftPackPlayer({
       setContentTimeMs(0);
       setSlideTimeMs(0);
     }, delay);
-  }, [burst, completed, current, opened]);
+  }, [burst, completed, current, maxOpens, openLocked, openScope, opened, preview]);
 
   useEffect(() => {
     if (!showLayers) return;
@@ -272,12 +304,20 @@ export function GiftPackPlayer({
         ))}
       </div>
 
+      {openLocked ? (
+        <div className="mx-auto mb-4 max-w-lg rounded-2xl border border-white/15 bg-white/5 px-4 py-6 text-center">
+          <p className="font-bengali text-base text-white/90">You have already opened your gift!</p>
+          <p className="mt-1 text-sm text-white/50">আপনি এই গিফট বক্স সর্বোচ্চ খোলার সীমায় পৌঁছেছেন।</p>
+        </div>
+      ) : null}
+
+      {!openLocked ? (
       <div className="mx-auto h-[min(62dvh,420px)] max-w-lg sm:h-[min(58vh,380px)]">
         <Viewport3D
           node={current}
           opened={opened}
           compactTv={isMobile}
-          onOpenRequest={!opened ? openBox : undefined}
+          onOpenRequest={!opened && !openLocked ? openBox : undefined}
           tv={{
             project,
             contentTimeMs: tvContentMs,
@@ -300,6 +340,13 @@ export function GiftPackPlayer({
           }}
         />
       </div>
+      ) : null}
+
+      {!preview && maxOpens > 0 && !openLocked ? (
+        <p className="mt-1 text-center text-[10px] text-white/40">
+          বাকি খোলার সুযোগ: {remainingOpens(openScope, maxOpens) ?? "—"}
+        </p>
+      ) : null}
 
       <p className="mt-2 text-center text-[10px] text-violet-300/70">
         📺 গিফটের কনটেন্ট TV Screen-এ দেখানো হচ্ছে
@@ -315,7 +362,7 @@ export function GiftPackPlayer({
           Previous
         </button>
 
-        {!opened ? (
+        {!opened && !openLocked ? (
           <button
             type="button"
             onClick={openBox}
@@ -323,7 +370,7 @@ export function GiftPackPlayer({
           >
             {openLabel}
           </button>
-        ) : (
+        ) : opened ? (
           <button
             type="button"
             onClick={goNext}
@@ -331,8 +378,18 @@ export function GiftPackPlayer({
           >
             {isLast ? "সম্পূর্ণ হয়েছে" : "Next"}
           </button>
-        )}
+        ) : null}
       </div>
+
+      <GiftRevealOverlay
+        open={showReveal}
+        message={revealText}
+        title={current?.name}
+        onClose={() => {
+          setShowReveal(false);
+          if (!preview && maxOpens > 0 && getOpenCount(openScope) >= maxOpens) setOpenLocked(true);
+        }}
+      />
 
       <p className="mt-3 text-center text-[10px] text-white/35 md:hidden">
         সোয়াইপ: ডানে = Next · বামে = Previous

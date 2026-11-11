@@ -58,6 +58,8 @@ export function createPackNode(templateId: GiftPackNode["templateId"], index: nu
     layers: [defaultTextLayer()],
     children: [],
     tvScreen: defaultTvScreen(),
+    revealMessage: "",
+    maxOpenLimit: 0,
   };
 }
 

@@ -72,6 +72,10 @@ model SiteSettings {
   homepageTaglineBn       String   @default("নিজের মতো করে 3D গিফট বক্স বানান")
   homepageHeroBn          String   @default("ছবি, গান, ভিডিও ও সারপ্রাইজ — এক লিংকে শেয়ার করুন")
   contactEmail            String   @default("hello@giftworld.local")
+  /** হোমপেজ ৩ডি ডেমো বক্স খোলার পর দেখানো বার্তা */
+  heroGiftBoxMessage      String   @default("Welcome! You unlocked a secret surprise from Gift World ✨")
+  /** ০ = অসীম; ১–১০ = ভিজিটর প্রতি ডিভাইসে সর্বোচ্চ খোলার সংখ্যা */
+  heroGiftBoxMaxOpens     Int      @default(3)
   updatedAt               DateTime @updatedAt
 }
 

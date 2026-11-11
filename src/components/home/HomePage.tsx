@@ -57,7 +57,13 @@ export async function HomePage() {
             </Link>
           </div>
         </div>
-        <HomeHero3D />
+        <HomeHero3D
+          message={
+            settings?.heroGiftBoxMessage ??
+            "Welcome! You unlocked a secret surprise from Gift World ✨"
+          }
+          maxOpens={settings?.heroGiftBoxMaxOpens ?? 3}
+        />
       </section>
 
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-16 md:px-8">

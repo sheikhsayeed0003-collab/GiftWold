@@ -85,6 +85,27 @@ export default async function AdminPage() {
               className={input + " mt-1 min-h-[80px]"}
             />
           </label>
+          <h3 className="col-span-full pt-2 text-sm font-semibold text-rose-200/90">৩ডি ডেমো গিফট বক্স (হোমপেজ)</h3>
+          <label className="col-span-full text-sm text-white/60">
+            ভেতরের বার্তা (খোলার পর পপ-আপ)
+            <textarea
+              name="heroGiftBoxMessage"
+              defaultValue={settings?.heroGiftBoxMessage}
+              className={input + " mt-1 min-h-[72px]"}
+            />
+          </label>
+          <label className="text-sm text-white/60">
+            Maximum Open Limit (ডিভাইস প্রতি)
+            <input
+              name="heroGiftBoxMaxOpens"
+              type="number"
+              min={0}
+              max={99}
+              defaultValue={settings?.heroGiftBoxMaxOpens ?? 3}
+              className={input + " mt-1"}
+            />
+            <span className="mt-1 block text-[10px] text-white/40">০ = অসীম খোলা</span>
+          </label>
           <button
             type="submit"
             className="col-span-full rounded-xl bg-rose-500 py-2 text-sm font-medium text-white"

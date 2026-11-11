@@ -97,6 +97,25 @@ export function RightPanel() {
             className="w-full"
           />
         </label>
+        <label className="mt-2 block text-[10px] text-white/45">রিভিল মেসেজ (পপ-আপ)</label>
+        <textarea
+          className={input + " min-h-[64px] resize-y"}
+          value={selectedNode.revealMessage ?? ""}
+          onChange={(e) => updateSelectedNode({ revealMessage: e.target.value })}
+          placeholder="খালি = প্রথম টেক্সট লেয়ার"
+        />
+        <label className="mt-2 block text-[10px] text-white/45">
+          Maximum Open Limit (ডিভাইস প্রতি)
+          <input
+            type="number"
+            min={0}
+            max={99}
+            className={input + " mt-1"}
+            value={selectedNode.maxOpenLimit ?? 0}
+            onChange={(e) => updateSelectedNode({ maxOpenLimit: Number(e.target.value) })}
+          />
+          <span className="text-white/35">০ = অসীম</span>
+        </label>
         <select
           className={input + " mt-2"}
           value={selectedNode.opening}

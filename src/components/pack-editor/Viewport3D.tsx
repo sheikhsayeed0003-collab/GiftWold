@@ -4,27 +4,40 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, RoundedBox, Text } from "@react-three/drei";
 import { useRef } from "react";
 import clsx from "clsx";
-import type { Group } from "three";
+import type { Group, Mesh } from "three";
 import type { GiftPackLayer, GiftPackNode, GiftPackProject } from "@/types/gift-pack";
 import { formatSequenceLabel } from "@/lib/gift-pack/sequence";
 import { GiftTvScreen, type TvScreenControlProps } from "./GiftTvScreen";
 
 function SceneBox({ node, opened }: { node: GiftPackNode; opened?: boolean }) {
   const g = useRef<Group>(null);
+  const lid = useRef<Mesh>(null);
   useFrame((_, d) => {
     if (g.current) g.current.rotation.y = node.rotationY + d * 0.15;
+    if (lid.current) {
+      const targetY = opened ? 1.25 : 0.62;
+      const targetX = opened ? -1.05 : 0;
+      const targetZ = opened ? 0.35 : 0;
+      lid.current.position.y += (targetY - lid.current.position.y) * 0.14;
+      lid.current.rotation.x += (targetX - lid.current.rotation.x) * 0.14;
+      lid.current.position.z += (targetZ - lid.current.position.z) * 0.12;
+    }
   });
   const s = node.scale;
-  const lidY = opened ? 1.1 : 0.62;
   return (
     <group ref={g} scale={s}>
       <RoundedBox args={[1.8, 1.2, 1.8]} radius={0.1} castShadow receiveShadow>
         <meshStandardMaterial color={node.boxColor} metalness={0.35} roughness={0.35} />
       </RoundedBox>
-      <mesh position={[0, lidY, 0]} scale={[1.02, 0.18, 1.02]}>
+      <mesh ref={lid} position={[0, 0.62, 0]} scale={[1.02, 0.18, 1.02]}>
         <boxGeometry />
-        <meshStandardMaterial color={node.ribbonColor} />
+        <meshStandardMaterial
+          color={node.ribbonColor}
+          emissive={node.ribbonColor}
+          emissiveIntensity={opened ? 0.45 : 0}
+        />
       </mesh>
+      {opened ? <pointLight position={[0, 0.5, 0.6]} intensity={1.8} color="#fda4af" distance={5} /> : null}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.15, 1.25, 1.85]} />
         <meshStandardMaterial color={node.ribbonColor} />

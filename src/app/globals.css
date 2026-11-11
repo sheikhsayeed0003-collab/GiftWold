@@ -260,6 +260,15 @@ body {
   perspective: 800px;
 }
 
+.gift-reveal-glow {
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.95), rgba(244, 63, 94, 0.35) 55%, transparent 70%);
+  box-shadow: 0 0 48px rgba(244, 63, 94, 0.55), 0 0 80px rgba(167, 139, 250, 0.35);
+}
+
+.gift-reveal-card {
+  box-shadow: 0 0 60px rgba(244, 63, 94, 0.25);
+}
+
 .wish-gradient-bar {
   background: linear-gradient(
     90deg,

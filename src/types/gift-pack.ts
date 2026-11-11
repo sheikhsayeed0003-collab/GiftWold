@@ -205,6 +205,10 @@ export interface GiftPackNode {
   children: GiftPackNode[];
   /** বক্সের বাইরের ইন্টারঅ্যাক্টিভ টিভি ডিসপ্লে */
   tvScreen?: GiftTvScreenConfig;
+  /** খোলার পর পপ-আপ গ্লো মেসেজ (খালি হলে টেক্সট লেয়ার) */
+  revealMessage?: string;
+  /** রিসিভার প্রতি ডিভাইসে সর্বোচ্চ খোলা; ০ = অসীম */
+  maxOpenLimit?: number;
 }
 
 export interface GiftPackProject {

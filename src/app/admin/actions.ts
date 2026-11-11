@@ -23,6 +23,8 @@ export async function updateSiteSettings(formData: FormData) {
       homepageTaglineBn: String(formData.get("homepageTaglineBn") ?? ""),
       homepageHeroBn: String(formData.get("homepageHeroBn") ?? ""),
       contactEmail: String(formData.get("contactEmail") ?? ""),
+      heroGiftBoxMessage: String(formData.get("heroGiftBoxMessage") ?? ""),
+      heroGiftBoxMaxOpens: Math.max(0, Number(formData.get("heroGiftBoxMaxOpens") ?? 3)),
     },
   });
   revalidatePath("/");
