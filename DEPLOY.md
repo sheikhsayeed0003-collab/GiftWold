@@ -23,6 +23,10 @@ Project: **gefty** → Settings → Environment Variables (Production):
 
 তারপর **Redeploy** (Deployments → … → Redeploy).
 
+লোকালে SQLite (`file:./dev.db`) — `npm run dev` (পোর্ট **3002**)।
+
+Vercel বিল্ডে `scripts/vercel-build.mjs` স্বয়ংক্রিয়ভাবে Postgres মোডে যায়।
+
 বিল্ডে `prisma migrate deploy` ও `db:seed` চালানোর জন্য একবার Vercel Shell বা লোকাল থেকে:
 
 ```bash
